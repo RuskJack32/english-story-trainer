@@ -94,12 +94,8 @@ if (selectedStory === "chat") {
         color: "#0f172a",
       }}
     >
-      <h1>💬 💬 Chat with Jack</h1>
+      <h1>💬 Chat with Jack</h1>
 
-      <p>
-🏔 Welcome back, Pachi!<br />
-Tell me about your day at Kitahotaka Hut.
-</p>
       <div style={{ marginBottom: "20px" }}>
   {chatHistory.map((msg, index) => (
     <p key={index}>{msg}</p>
@@ -786,12 +782,7 @@ border: "1px solid #e2e8f0",
       style={{ cursor: "pointer" }}
       onClick={() => setOpenedStory(story)}
     >
-      📖 <div
-  onClick={() => setOpenedStory(story)}
-  style={{ cursor: "pointer" }}
->
-  {story.title}
-</div><div
+      📖<div
   onClick={() => setOpenedStory(story)}
   style={{ cursor: "pointer" }}
 >
