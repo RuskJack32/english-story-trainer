@@ -756,7 +756,7 @@ utterance.voice =
 
 <p
   style={{
-    color: "#94a3b8",
+    color: "#58f126",
     marginBottom: "30px",
   }}
 >
@@ -782,7 +782,7 @@ border: "1px solid #e2e8f0",
       style={{ cursor: "pointer" }}
       onClick={() => setOpenedStory(story)}
     >
-      📖<div
+    <div
   onClick={() => setOpenedStory(story)}
   style={{ cursor: "pointer" }}
 >
