@@ -82,8 +82,8 @@ if (selectedStory === "chat") {
       style={{
         minHeight: "100vh",
         padding: "24px",
-        background: "#0f172a",
-        color: "white",
+        background: "#f8fafc",
+        color: "#0f172a",
       }}
     >
       <h1>💬 AI Conversation</h1>
@@ -333,8 +333,8 @@ if (selectedStory === "saved") {
       style={{
         minHeight: "100vh",
         padding: "24px",
-        background: "#0f172a",
-        color: "white",
+        background: "#f8fafc",
+        color: "#0f172a",
       }}
     >
       <h2>{storyTitle}</h2>
@@ -683,11 +683,27 @@ utterance.voice =
       style={{
         minHeight: "100vh",
         padding: "24px",
-        background: "#0f172a",
+        background: "#f8fafc",
         color: "white",
       }}
     >
-      <h1>📚 My English Stories</h1>
+      <h1
+  style={{
+    fontSize: "42px",
+    marginBottom: "8px",
+  }}
+>
+  📚 My English Stories
+</h1>
+
+<p
+  style={{
+    color: "#94a3b8",
+    marginBottom: "30px",
+  }}
+>
+  Practice English every day
+</p>
 
       <h2>Saved Stories</h2>
 
@@ -695,15 +711,17 @@ utterance.voice =
   <div
     key={index}
     style={{
-      background: "#222",
-      padding: "15px",
-      marginTop: "10px",
-      borderRadius: "10px",
-      color: "white",
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-    }}
+  background: "#1e293b",
+  padding: "20px",
+  marginTop: "16px",
+  borderRadius: "16px",
+  color: "white",
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
+  border: "1px solid #334155",
+}}
   >
     <span
       style={{ cursor: "pointer" }}
@@ -714,6 +732,15 @@ utterance.voice =
   style={{ cursor: "pointer" }}
 >
   {story.title}
+</div><div
+  onClick={() => setOpenedStory(story)}
+  style={{
+    cursor: "pointer",
+    fontSize: "20px",
+    fontWeight: "600",
+  }}
+>
+  📖 {story.title}
 </div>
     </span>
 
