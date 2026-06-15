@@ -34,6 +34,7 @@ function App() {
   useState<string[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [message, setMessage] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
   const [generatedStory, setGeneratedStory] = useState("");
   const [storyTitle, setStoryTitle] = useState("");
   const [openedStory, setOpenedStory] = useState<{
@@ -305,6 +306,7 @@ setStoryTitle(
     {generatedStory}
     <button
   onClick={() => {
+    
     setSavedStories([
       ...savedStories,
       {
@@ -321,8 +323,15 @@ setStoryTitle(
 )}
 
 {generatedStory && (
-  <button
+ <button
+  disabled={isGenerating}
   onClick={async () => {
+    setIsGenerating(true);
+
+await new Promise(resolve =>
+  setTimeout(resolve, 3000)
+);
+
     const response = await fetch(
       "https://api.openai.com/v1/chat/completions",
       {
@@ -350,9 +359,10 @@ setStoryTitle(
     setWordExplanation(
       data.choices[0].message.content
     );
+    setIsGenerating(false);
   }}
 >
-  Explain Words
+  {isGenerating ? "⏳ Explaining..." : "Explain Words"}
 </button>
 )}
 {wordExplanation && (
