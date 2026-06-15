@@ -72,7 +72,15 @@ useEffect(() => {
 }, [savedStories, loaded]);
 
   const [chatHistory, setChatHistory] = useState([
-  "AI: Hello Jack! How was your day today?"
+  "🏔 Welcome back, Pachi!",
+  "",
+  "What happened at Kitahotaka Hut today?",
+  "",
+  "You can tell me:",
+  "• A conversation with a foreign hiker",
+  "• Something funny that happened",
+  "• English you couldn't say",
+  "• A situation you want to practice",
 ]);
 const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
 
@@ -86,9 +94,12 @@ if (selectedStory === "chat") {
         color: "#0f172a",
       }}
     >
-      <h1>💬 AI Conversation</h1>
+      <h1>💬 JACK Conversation</h1>
 
-      <p>Hello Jack! How was your day today?</p>
+      <p>
+🏔 Welcome back, Pachi!<br />
+Tell me about your day at Kitahotaka Hut.
+</p>
       <div style={{ marginBottom: "20px" }}>
   {chatHistory.map((msg, index) => (
     <p key={index}>{msg}</p>
