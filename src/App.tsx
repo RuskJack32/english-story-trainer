@@ -185,29 +185,33 @@ onChange={(e) => setMessage(e.target.value)}
               content: `
 Create:
 
-1. A natural 3-minute English story based on the conversation.
+1. A natural 2-minute English story
 
-2. Useful phrases and expressions.
+2. Useful phrases and expressions
 
-Include ALL useful phrases, expressions, idioms, and natural English patterns that appear in the story.
+Include ALL useful phrases,
+natural expressions,
+idioms,
+and conversation patterns.
 
 For each phrase provide:
-- Meaning in Japanese
-- One easy example sentence
-- Japanese translation of the example
+- Japanese meaning
+- Example sentence
+- Japanese translation
 
-3. Useful vocabulary words.
+3. Useful vocabulary
 
-Include ALL important vocabulary that an English learner may not know.
+Include ALL important vocabulary
+an English learner may not know.
 
 For each vocabulary word provide:
 - Japanese meaning
-- One easy example sentence
+- Example sentence
 - Japanese translation
 
-Make the English sound natural and spoken by native speakers.
+Make the English sound natural and conversational.
 
-The goal is to help a Japanese learner improve real-life English conversation skills.
+The goal is to improve real-life English conversation skills.
 
 Based on the conversation.
 `
