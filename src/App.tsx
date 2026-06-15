@@ -94,7 +94,7 @@ if (selectedStory === "chat") {
         color: "#0f172a",
       }}
     >
-      <h1>💬 JACK Conversation</h1>
+      <h1>💬 💬 Chat with Jack</h1>
 
       <p>
 🏔 Welcome back, Pachi!<br />
