@@ -711,16 +711,13 @@ utterance.voice =
   <div
     key={index}
     style={{
-  background: "#1e293b",
-  padding: "20px",
-  marginTop: "16px",
-  borderRadius: "16px",
-  color: "white",
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
-  border: "1px solid #334155",
+  background: "white",
+padding: "20px",
+marginTop: "16px",
+borderRadius: "20px",
+color: "#0f172a",
+boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+border: "1px solid #e2e8f0",
 }}
   >
     <span
@@ -734,13 +731,37 @@ utterance.voice =
   {story.title}
 </div><div
   onClick={() => setOpenedStory(story)}
-  style={{
-    cursor: "pointer",
-    fontSize: "20px",
-    fontWeight: "600",
-  }}
+  style={{ cursor: "pointer" }}
 >
-  📖 {story.title}
+  <div
+    style={{
+      fontSize: "28px",
+      marginBottom: "8px",
+    }}
+  >
+    📖
+  </div>
+
+  <div
+    style={{
+      fontSize: "20px",
+      fontWeight: "700",
+    }}
+  >
+    {story.title}
+  </div>
+
+  <div
+    style={{
+      background: "#ef4444",
+color: "white",
+border: "none",
+borderRadius: "12px",
+padding: "10px 14px",
+    }}
+  >
+    Tap to read
+  </div>
 </div>
     </span>
 
