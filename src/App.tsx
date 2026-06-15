@@ -244,7 +244,7 @@ setStoryTitle(
       marginTop: "30px",
       textAlign: "left",
       whiteSpace: "pre-wrap",
-      background: "#1e293b",
+      background: "#ffffff",
       padding: "20px",
       borderRadius: "10px"
     }}
@@ -306,7 +306,7 @@ setStoryTitle(
   <div
     style={{
       marginTop: "20px",
-      background: "#222",
+      background: "#da5050",
       padding: "15px",
       borderRadius: "10px",
       whiteSpace: "pre-wrap",
@@ -341,7 +341,7 @@ if (selectedStory === "saved") {
 
       <div
         style={{
-          background: "#222",
+          background: "#008d0e",
           padding: "20px",
           borderRadius: "10px",
           whiteSpace: "pre-wrap",
@@ -370,9 +370,34 @@ if (openedStory) {
     >
       <h1>{openedStory?.title}</h1>
 
+      <button
+  onClick={() => {
+    const utterance =
+      new SpeechSynthesisUtterance(
+        openedStory.content
+      );
+
+    utterance.lang = "en-US";
+
+    speechSynthesis.speak(utterance);
+  }}
+  style={{
+    background: "#3b82f6",
+    color: "white",
+    border: "none",
+    padding: "12px 20px",
+    borderRadius: "12px",
+    fontSize: "16px",
+    cursor: "pointer",
+    marginBottom: "20px",
+  }}
+>
+  🔊 Play Audio
+</button>
+
       <div
         style={{
-          background: "#222",
+          background: "#e03737",
           padding: "20px",
           borderRadius: "10px",
           whiteSpace: "pre-wrap",
@@ -385,7 +410,7 @@ if (openedStory) {
       marginTop: "30px",
       whiteSpace: "pre-wrap",
       textAlign: "left",
-      background: "#222",
+      background: "#47c7ba",
       padding: "20px",
       borderRadius: "10px",
     }}
@@ -420,28 +445,8 @@ if (openedStory) {
 console.log("openedStory", openedStory);
   if (selectedStory === "kumamoto") {
    const speakText = `
-   const playAudio = () => {
-  if (isPlaying) {
-    speechSynthesis.cancel();
-    setIsPlaying(false);
-    return;
-  }
-
-  const utterance =
-    new SpeechSynthesisUtterance(speakText);
-
-  utterance.lang = "en-US";
-
-  utterance.onend = () => {
-    setIsPlaying(false);
-  };
-
-  speechSynthesis.speak(utterance);
-
-  setIsPlaying(true);
-};
 If I had to recommend one place in Japan, I'd say Kumamoto.
-To be honest, I didn't know much about it before I went there, but it ended up being one of my favorite places in Japan.
+To be honest, I didn't know much about it before I went there.
 A lot of people visit Kumamoto for the food.
 I tried Akaushi beef there, and it was incredible.
 But what really blew me away was Kumamoto Castle.
@@ -456,7 +461,7 @@ So if you're looking for great food, amazing nature, and a place with a powerful
         style={{
           minHeight: "100vh",
           padding: "24px",
-          background: "#0f172a",
+          background: "#456cc8",
           color: "white",
         }}
       >
@@ -596,7 +601,7 @@ So if you're looking for great food, amazing nature, and a place with a powerful
     style={{
       marginTop: "20px",
       padding: "16px",
-      background: "#1e293b",
+      background: "#20511c",
       borderRadius: "12px",
     }}
   >
@@ -779,14 +784,40 @@ padding: "10px 14px",
 ))}
 
       <button
-        onClick={() => setSelectedStory("kumamoto")}
-      >
-        🏯 Kumamoto
-      </button>
+  onClick={() => setSelectedStory("kumamoto")}
+  style={{
+    width: "100%",
+    padding: "18px",
+    marginTop: "20px",
+    borderRadius: "18px",
+    border: "none",
+    background: "linear-gradient(135deg,#3b82f6,#8b5cf6)",
+    color: "white",
+    fontSize: "18px",
+    fontWeight: "700",
+    cursor: "pointer",
+    boxShadow: "0 8px 24px rgba(59,130,246,0.25)",
+  }}
+>
+  🏯 Explore Kumamoto
+</button>
       <button
   onClick={() => setSelectedStory("chat")}
+  style={{
+    width: "100%",
+    padding: "18px",
+    marginTop: "12px",
+    borderRadius: "18px",
+    border: "none",
+    background: "linear-gradient(135deg,#f59e0b,#ef4444)",
+    color: "white",
+    fontSize: "18px",
+    fontWeight: "700",
+    cursor: "pointer",
+    boxShadow: "0 8px 24px rgba(245,158,11,0.25)",
+  }}
 >
-  💬 New Story
+  ✨ Create New Story
 </button>
     </div>
   );
