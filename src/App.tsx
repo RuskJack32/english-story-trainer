@@ -175,7 +175,9 @@ onChange={(e) => setMessage(e.target.value)}
 </button>
   <button
   style={{ marginLeft: "10px" }}
+  disabled={isGenerating}
   onClick={async () => {
+    setIsGenerating(true);
 
     const response = await fetch(
       "https://api.openai.com/v1/chat/completions",
@@ -288,9 +290,18 @@ const titleData = await titleResponse.json();
 setStoryTitle(
   titleData.choices[0].message.content.trim()
 );
+setSavedStories([
+      ...savedStories,
+      {
+        title: storyTitle,
+        content: generatedStory,
+        words: wordExplanation,
+      },
+    ]);
+setIsGenerating(false);
   }}
 >
-  Generate Story
+ {isGenerating ? "⏳ Generating..." : "Generate Story"}
 </button>
 {generatedStory && (
   <div
@@ -304,21 +315,7 @@ setStoryTitle(
     }}
   >
     {generatedStory}
-    <button
-  onClick={() => {
     
-    setSavedStories([
-      ...savedStories,
-      {
-        title: storyTitle,
-        content: generatedStory,
-        words: wordExplanation,
-      },
-    ]);
-  }}
->
-  Save Story
-</button>
   </div>
 )}
 
@@ -366,16 +363,32 @@ await new Promise(resolve =>
 </button>
 )}
 {wordExplanation && (
-  <div
-    style={{
-      marginTop: "20px",
-      background: "#da5050",
-      padding: "15px",
-      borderRadius: "10px",
-      whiteSpace: "pre-wrap",
-    }}
-  >
-    {wordExplanation}
+  <div>
+
+    <button
+      onClick={() => {
+        const utterance =
+          new SpeechSynthesisUtterance(wordExplanation);
+
+        utterance.lang = "en-US";
+        speechSynthesis.speak(utterance);
+      }}
+    >
+      🔊 Read Aloud
+    </button>
+
+    <div
+      style={{
+        marginTop: "20px",
+        background: "#da5050",
+        padding: "15px",
+        borderRadius: "10px",
+        whiteSpace: "pre-wrap",
+      }}
+    >
+      {wordExplanation}
+    </div>
+
   </div>
 )}
 
