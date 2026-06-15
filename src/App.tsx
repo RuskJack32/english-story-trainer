@@ -747,8 +747,7 @@ utterance.voice =
     >
       <h1
   style={{
-    fontSize: "42px",
-    marginBottom: "8px",
+    color: "#02fc55"
   }}
 >
   📚 My English Stories
@@ -763,7 +762,13 @@ utterance.voice =
   Practice English every day
 </p>
 
-      <h2>Saved Stories</h2>
+      <h2
+  style={{
+    color: "#0f172a"
+  }}
+>
+  Saved Stories
+</h2>
 
 {savedStories.map((story, index) => (
   <div
