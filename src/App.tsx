@@ -36,14 +36,12 @@ function App() {
   const [message, setMessage] = useState("");
   const [generatedStory, setGeneratedStory] = useState("");
   const [storyTitle, setStoryTitle] = useState("");
-  const [wordExplanation, setWordExplanation] = useState("");
-  const [openedStory, setOpenedStory] = useState<
-{
+  const [openedStory, setOpenedStory] = useState<{
   title: string;
   content: string;
   words?: string;
-} | null
->(null);
+} | null>(null);
+  const [wordExplanation, setWordExplanation] = useState("");
   const [savedStories, setSavedStories] = useState<
   
   {
@@ -77,37 +75,7 @@ useEffect(() => {
   "AI: Hello Jack! How was your day today?"
 ]);
 const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-if (openedStory) {
-  return (
-    <div
-      style={{
-        minHeight: "100vh",
-        padding: "24px",
-        background: "#0f172a",
-        color: "white",
-      }}
-    >
-      <h2>{openedStory.title}</h2>
 
-      <div
-        style={{
-          background: "#222",
-          padding: "20px",
-          borderRadius: "10px",
-          whiteSpace: "pre-wrap",
-        }}
-      >
-        {openedStory.content}
-      </div>
-
-      <br />
-
-      <button onClick={() => setOpenedStory(null)}>
-        ← Back
-      </button>
-    </div>
-  );
-}
 if (selectedStory === "chat") {
   return (
     <div
@@ -287,10 +255,10 @@ setStoryTitle(
     setSavedStories([
       ...savedStories,
       {
-  title: storyTitle,
-  content: generatedStory,
-  words: wordExplanation,
-}
+        title: storyTitle,
+        content: generatedStory,
+        words: wordExplanation,
+      },
     ]);
   }}
 >
@@ -400,7 +368,7 @@ if (openedStory) {
         color: "white",
       }}
     >
-      <h1>{openedStory.title}</h1>
+      <h1>{openedStory?.title}</h1>
 
       <div
         style={{
@@ -410,8 +378,8 @@ if (openedStory) {
           whiteSpace: "pre-wrap",
         }}
       >
-        {openedStory.content}
-        {openedStory.words && (
+        {openedStory?.content}
+        {openedStory?.words && (
   <div
     style={{
       marginTop: "30px",
@@ -424,7 +392,7 @@ if (openedStory) {
   >
     <h3>📚 Vocabulary</h3>
 
-    {openedStory.words}
+    {openedStory?.words}
   </div>
 )}
         <hr />
@@ -437,7 +405,7 @@ if (openedStory) {
     marginTop: "20px",
   }}
 >
-  {openedStory.words}
+  {" "}
 </div>
       </div>
 
@@ -449,7 +417,7 @@ if (openedStory) {
     </div>
   );
 }
-console.log(openedStory);
+console.log("openedStory", openedStory);
   if (selectedStory === "kumamoto") {
    const speakText = `
    const playAudio = () => {
