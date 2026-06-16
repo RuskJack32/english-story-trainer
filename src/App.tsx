@@ -37,6 +37,7 @@ function App() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedStory, setGeneratedStory] = useState("");
   const [storyTitle, setStoryTitle] = useState("");
+  const [editMode, setEditMode] = useState(false);
   const [openedStory, setOpenedStory] = useState<{
   title: string;
   content: string;
@@ -784,14 +785,28 @@ utterance.voice =
 >
   Practice English every day
 </p>
-
+<div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "20px",
+  }}
+>
+      
       <h2
   style={{
-    color: "#0f172a"
+    color: "#365498"
   }}
 >
   Saved Stories
 </h2>
+ <button
+    onClick={() => setEditMode(!editMode)}
+  >
+    {editMode ? "✔ Done" : "✏️ Edit"}
+  </button>
+</div>
 
 {savedStories.map((story, index) => (
   <div
@@ -839,6 +854,8 @@ color: "white",
 border: "none",
 borderRadius: "12px",
 padding: "10px 14px",
+position: "relative"
+
     }}
   >
     Tap to read
@@ -846,18 +863,38 @@ padding: "10px 14px",
 </div>
     </span>
 
+    {editMode && (
     <button
-      onClick={() => {
-        const updated = savedStories.filter(
-          (_, i) => i !== index
-        );
-        setSavedStories(updated);
-      }}
-    >
-      🗑️
-    </button>
+  onClick={() => {
+    if (
+      window.confirm(
+        `Delete "${story.title}" ?`
+      )
+    ) {
+      const updated = savedStories.filter(
+        (_, i) => i !== index
+      );
+
+      setSavedStories(updated);
+    }
+  }}
+  style={{
+    position: "absolute",
+    top: "10px",
+    right: "10px",
+    background: "transparent",
+    border: "none",
+    fontSize: "22px",
+    cursor: "pointer",
+  }}
+>
+  🗑️
+</button>
+)}
+
   </div>
 ))}
+
 
       <button
   onClick={() => setSelectedStory("kumamoto")}
@@ -866,7 +903,9 @@ padding: "10px 14px",
     padding: "18px",
     marginTop: "20px",
     borderRadius: "18px",
+    
     border: "none",
+    
     background: "linear-gradient(135deg,#3b82f6,#8b5cf6)",
     color: "white",
     fontSize: "18px",
