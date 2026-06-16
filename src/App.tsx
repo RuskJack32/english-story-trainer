@@ -33,10 +33,34 @@ function App() {
   const [savedPhrases, setSavedPhrases] =
   useState<string[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showStory, setShowStory] = useState(true);
+  const [showVocabulary, setShowVocabulary] = useState(false);
+  const [savedWords, setSavedWords] = useState<string[]>([]);
+  useEffect(() => {
+  const savedWordsData =
+    localStorage.getItem("savedWords");
+
+  if (savedWordsData) {
+    setSavedWords(
+      JSON.parse(savedWordsData)
+    );
+  }
+}, []);
+
+useEffect(() => {
+  localStorage.setItem(
+    "savedWords",
+    JSON.stringify(savedWords)
+  );
+}, [savedWords]);
+  const [showWords, setShowWords] = useState(false);
+ 
   const [message, setMessage] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedStory, setGeneratedStory] = useState("");
   const [storyTitle, setStoryTitle] = useState("");
+  const [generatedTitle, setGeneratedTitle] =
+  useState("");
   const [editMode, setEditMode] = useState(false);
   const [openedStory, setOpenedStory] = useState<{
   title: string;
@@ -54,6 +78,7 @@ function App() {
 >([]);
 const [loaded, setLoaded] = useState(false);
   useEffect(() => {
+    
   const saved = localStorage.getItem("savedStories");
 
   console.log("loaded", saved);
@@ -65,6 +90,7 @@ const [loaded, setLoaded] = useState(false);
   setLoaded(true);
 }, []);
 useEffect(() => {
+  
   if (!loaded) return;
 
   localStorage.setItem(
@@ -176,6 +202,7 @@ onChange={(e) => setMessage(e.target.value)}
 </button>
   <button
   style={{ marginLeft: "10px" }}
+  
   disabled={isGenerating}
   onClick={async () => {
     setIsGenerating(true);
@@ -288,17 +315,11 @@ const titleResponse = await fetch(
 
 const titleData = await titleResponse.json();
 
-setStoryTitle(
-  titleData.choices[0].message.content.trim()
-);
-setSavedStories([
-      ...savedStories,
-      {
-        title: storyTitle,
-        content: generatedStory,
-        words: wordExplanation,
-      },
-    ]);
+const title =
+  titleData.choices[0].message.content.trim();
+
+setStoryTitle(title);
+setGeneratedTitle(title);
 setIsGenerating(false);
   }}
 >
@@ -343,9 +364,24 @@ await new Promise(resolve =>
           messages: [
             {
               role: "user",
-              content:
-                "Explain difficult English words from this text in Japanese:\n\n" +
-                generatedStory,
+              content: `
+From this story, choose useful vocabulary.
+
+Use EXACTLY this format.
+
+Choose 10-20 useful vocabulary items.
+
+Use EXACTLY this format.
+
+WORD: word
+MEANING: Japanese meaning
+EXAMPLE: example sentence
+TRANSLATION: Japanese translation
+
+Do not include any explanations outside this format.
+Story:
+${generatedStory}
+`,
             },
           ],
         }),
@@ -354,10 +390,29 @@ await new Promise(resolve =>
 
     const data = await response.json();
 
-    setWordExplanation(
-      data.choices[0].message.content
-    );
-    setIsGenerating(false);
+const wordsData =
+  data.choices[0].message.content;
+
+setWordExplanation(wordsData);
+
+if (
+  savedStories.some(
+    s => s.content === generatedStory
+  )
+) {
+  setIsGenerating(false);
+  return;
+}
+setSavedStories(prev => [
+  ...prev,
+  {
+    title: generatedTitle,
+    content: generatedStory,
+    words: wordsData,
+  },
+]);
+
+setIsGenerating(false);
   }}
 >
   {isGenerating ? "⏳ Explaining..." : "Explain Words"}
@@ -387,7 +442,79 @@ await new Promise(resolve =>
         whiteSpace: "pre-wrap",
       }}
     >
-      {wordExplanation}
+      {wordExplanation
+  .split("WORD:")
+  .filter(Boolean)
+  .map((word, index) => (
+    <div
+      key={index}
+      style={{
+        background: "#ffffff",
+        color: "#000",
+        padding: "15px",
+        borderRadius: "12px",
+        marginBottom: "15px",
+        textAlign: "left",
+      }}
+    >
+      <div
+  style={{
+    whiteSpace: "pre-wrap",
+    lineHeight: "1.8",
+  }}
+>
+  {word}
+</div>
+
+      <button
+  onClick={() => {
+    const wordOnly =
+      word.split("\n")[0].trim();
+
+    speechSynthesis.speak(
+      new SpeechSynthesisUtterance(
+        wordOnly
+      )
+    );
+  }}
+  style={{
+    marginRight: "10px",
+  }}
+>
+  🔊 Pronounce
+</button>
+<button
+      disabled={savedWords.includes(word)}
+  onClick={() => {
+    const updated = [
+      ...new Set([
+        ...savedWords,
+        word,
+      ]),
+    ];
+
+    setSavedWords(updated);
+  }}
+  style={{
+    marginTop: "10px",
+    padding: "8px 12px",
+    borderRadius: "8px",
+    border: "none",
+    cursor: "pointer",
+    background: savedWords.includes(word)
+      ? "#22c55e"
+      : "#e5e7eb",
+    color: savedWords.includes(word)
+      ? "white"
+      : "black",
+  }}
+>
+  {savedWords.includes(word)
+    ? "✅ Saved"
+    : "⭐ Save"}
+</button>
+    </div>
+  ))}
     </div>
 
   </div>
@@ -472,44 +599,111 @@ if (openedStory) {
   🔊 Play Audio
 </button>
 
+      <button
+  onClick={() => setShowStory(!showStory)}
+  style={{
+    width: "100%",
+    padding: "14px",
+    marginBottom: "12px",
+    borderRadius: "12px",
+    border: "none",
+    fontWeight: "700",
+    cursor: "pointer",
+  }}
+>
+  📖 Story {showStory ? "▲" : "▼"}
+</button>
+
+{showStory && (
+  <div
+    style={{
+      background: "#e03737",
+      padding: "20px",
+      borderRadius: "10px",
+      whiteSpace: "pre-wrap",
+      marginBottom: "15px",
+    }}
+  >
+    {openedStory?.content}
+  </div>
+)}
+
+{openedStory?.words && (
+  <>
+    <button
+      onClick={() =>
+        setShowVocabulary(!showVocabulary)
+      }
+      style={{
+        width: "100%",
+        padding: "14px",
+        marginBottom: "12px",
+        borderRadius: "12px",
+        border: "none",
+        fontWeight: "700",
+        cursor: "pointer",
+      }}
+    >
+      📚 Vocabulary {showVocabulary ? "▲" : "▼"}
+    </button>
+
+    {showVocabulary && (
       <div
         style={{
-          background: "#e03737",
+          background: "#47c7ba",
           padding: "20px",
           borderRadius: "10px",
           whiteSpace: "pre-wrap",
         }}
       >
-        {openedStory?.content}
-        {openedStory?.words && (
-  <div
-    style={{
-      marginTop: "30px",
-      whiteSpace: "pre-wrap",
-      textAlign: "left",
-      background: "#47c7ba",
-      padding: "20px",
-      borderRadius: "10px",
-    }}
-  >
-    <h3>📚 Vocabulary</h3>
-
-    {openedStory?.words}
-  </div>
-)}
-        <hr />
-
-<h3>Words</h3>
-
-<div
-  style={{
-    whiteSpace: "pre-wrap",
-    marginTop: "20px",
-  }}
->
-  {" "}
-</div>
+        {openedStory?.words
+  .split("WORD:")
+  .filter(Boolean)
+  .map((word, index) => (
+    <div
+      key={index}
+      style={{
+        background: "#fff",
+        color: "#000",
+        padding: "15px",
+        borderRadius: "12px",
+        marginBottom: "15px",
+        textAlign: "left",
+      }}
+    >
+      <div
+        style={{
+          whiteSpace: "pre-wrap",
+          lineHeight: "1.8",
+        }}
+      >
+        {word}
       </div>
+
+      <button
+        disabled={savedWords.includes(word)}
+        onClick={() => {
+          const updated = [
+            ...new Set([
+              ...savedWords,
+              word,
+            ]),
+          ];
+
+          setSavedWords(updated);
+        }}
+      >
+        {savedWords.includes(word)
+          ? "✅ Saved"
+          : "⭐ Save"}
+      </button>
+    </div>
+))}
+       
+      </div>
+    )}
+  </>
+)}
 
       <br />
 
@@ -520,7 +714,73 @@ if (openedStory) {
   );
 }
 console.log("openedStory", openedStory);
-  if (selectedStory === "kumamoto") {
+  if (selectedStory === "vocabulary") {
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        padding: "24px",
+        background: "#b0c5f6",
+        color: "white",
+      }}
+    >
+      <h1>📚 My Vocabulary</h1>
+
+      {savedWords.map((word, index) => (
+  <div
+  style={{
+    background: "#ffffff",
+    color: "#000",
+    padding: "20px",
+    borderRadius: "12px",
+    marginBottom: "15px",
+    position: "relative",
+    textAlign: "left",
+    lineHeight: "1.8",
+  }}
+><button
+  onClick={() => {
+    const updated =
+      savedWords.filter(
+        (_, i) => i !== index
+      );
+
+    setSavedWords(updated);
+  }}
+  style={{
+    position: "absolute",
+    top: "10px",
+    right: "10px",
+    background: "red",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+  }}
+>
+  🗑️
+</button>
+<div
+  style={{
+    whiteSpace: "pre-wrap",
+  }}
+>
+  {word}
+</div></div>
+))}
+  
+
+      <button
+        onClick={() =>
+          setSelectedStory("")
+        }
+      >
+        ← Back
+      </button>
+    </div>
+  );
+}
+if (selectedStory === "kumamoto") {
    const speakText = `
 If I had to recommend one place in Japan, I'd say Kumamoto.
 To be honest, I didn't know much about it before I went there.
@@ -816,11 +1076,39 @@ utterance.voice =
 padding: "20px",
 marginTop: "16px",
 borderRadius: "20px",
-color: "#0f172a",
-boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+
+color: "#0b3fb8",
+boxShadow: "0 8px 24px rgba(255, 44, 44, 0.95)",
 border: "1px solid #e2e8f0",
+position: "relative"
 }}
   >
+     {editMode && (<button
+  onClick={() => {
+    if (
+      window.confirm(
+        `Delete "${story.title}" ?`
+      )
+    ) {
+      const updated = savedStories.filter(
+        (_, i) => i !== index
+      );
+
+      setSavedStories(updated);
+    }
+  }}
+  style={{
+    position: "absolute",
+    top: "10px",
+    right: "10px",
+    background: "transparent",
+    border: "none",
+    fontSize: "22px",
+    cursor: "pointer",
+  }}
+>
+  🗑️
+</button>)}
     <span
       style={{ cursor: "pointer" }}
       onClick={() => setOpenedStory(story)}
@@ -863,35 +1151,7 @@ position: "relative"
 </div>
     </span>
 
-    {editMode && (
-    <button
-  onClick={() => {
-    if (
-      window.confirm(
-        `Delete "${story.title}" ?`
-      )
-    ) {
-      const updated = savedStories.filter(
-        (_, i) => i !== index
-      );
-
-      setSavedStories(updated);
-    }
-  }}
-  style={{
-    position: "absolute",
-    top: "10px",
-    right: "10px",
-    background: "transparent",
-    border: "none",
-    fontSize: "22px",
-    cursor: "pointer",
-  }}
->
-  🗑️
-</button>
-)}
-
+   
   </div>
 ))}
 
@@ -933,6 +1193,24 @@ position: "relative"
   }}
 >
   ✨ Create New Story
+</button>
+
+<button
+  onClick={() => setSelectedStory("vocabulary")}
+  style={{
+    width: "100%",
+    padding: "18px",
+    marginTop: "12px",
+    borderRadius: "18px",
+    border: "none",
+    background: "#28f5b0",
+    color: "white",
+    fontSize: "18px",
+    fontWeight: "700",
+    cursor: "pointer",
+  }}
+>
+  📚 My Vocabulary
 </button>
     </div>
   );
