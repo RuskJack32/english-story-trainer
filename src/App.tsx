@@ -36,6 +36,10 @@ function App() {
   const [showStory, setShowStory] = useState(true);
   const [showVocabulary, setShowVocabulary] = useState(false);
   const [savedWords, setSavedWords] = useState<string[]>([]);
+  const [memory, setMemory] =
+  useState<string[]>([]);
+  const [jackProfile, setJackProfile] =
+  useState("");
   useEffect(() => {
   const savedWordsData =
     localStorage.getItem("savedWords");
@@ -53,6 +57,37 @@ useEffect(() => {
     JSON.stringify(savedWords)
   );
 }, [savedWords]);
+useEffect(() => {
+  const savedMemory =
+    localStorage.getItem("jackMemory");
+
+  if (savedMemory) {
+    setMemory(
+      JSON.parse(savedMemory)
+    );
+  }
+}, []);
+useEffect(() => {
+  const savedProfile =
+    localStorage.getItem("jackProfile");
+
+  if (savedProfile) {
+    setJackProfile(savedProfile);
+  }
+}, []);
+
+useEffect(() => {
+  localStorage.setItem(
+    "jackMemory",
+    JSON.stringify(memory)
+  );
+}, [memory]);
+useEffect(() => {
+  localStorage.setItem(
+    "jackProfile",
+    jackProfile
+  );
+}, [jackProfile]);
   const [showWords, setShowWords] = useState(false);
  
   const [message, setMessage] = useState("");
@@ -149,10 +184,17 @@ onChange={(e) => setMessage(e.target.value)}
   onClick={async () => {
   const userMessage = message;
 
-  setChatHistory([
-    ...chatHistory,
-    "You: " + userMessage,
+setChatHistory([
+  ...chatHistory,
+  "You: " + userMessage,
+]);
+
+if (userMessage.length > 30) {
+  setMemory(prev => [
+    ...prev,
+    userMessage
   ]);
+}
 
   setMessage("");
 
@@ -168,10 +210,29 @@ onChange={(e) => setMessage(e.target.value)}
         model: "gpt-4.1-mini",
         messages: [
   {
-    role: "system",
-    content:
-      "You are an English conversation partner. Reply in simple English and keep the conversation going."
-  },
+  role: "system",
+  content: `
+You are Jack.
+
+You are Pachi's English learning partner.
+
+Important memories about Pachi:
+
+${jackProfile}
+
+Recent conversations:
+
+${memory.slice(-30).join("\n")}
+
+Rules:
+- Remember previous conversations.
+- Refer to past events naturally.
+- Act like a real friend.
+- Ask follow-up questions about previous events.
+- Help Pachi improve natural English.
+- Keep your English simple and conversational.
+`
+},
 
   ...chatHistory.map(msg => ({
     role: msg.startsWith("You:")
@@ -223,7 +284,23 @@ onChange={(e) => setMessage(e.target.value)}
               content: `
 Create:
 
-You are Jack, a friendly English coach.
+You are Jack.
+
+You remember previous conversations.
+
+Always correct English naturally.
+
+When Pachi makes a mistake:
+
+1. Show Natural English
+2. Explain why
+3. Continue conversation
+
+Use real spoken English used by native speakers.
+
+Avoid textbook English.
+
+Act like a close foreign friend.
 
 The user's name is Pachi.
 
@@ -319,9 +396,59 @@ const title =
   titleData.choices[0].message.content.trim();
 
 setStoryTitle(title);
-setGeneratedTitle(title);
+const wordsResponse = await fetch(
+  "https://api.openai.com/v1/chat/completions",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "gpt-5-mini",
+      messages: [
+        {
+          role: "user",
+          content: `
+From this story, choose useful vocabulary.
+
+Use EXACTLY this format.
+
+WORD: word
+MEANING: Japanese meaning
+EXAMPLE: example sentence
+TRANSLATION: Japanese translation
+
+Story:
+${story}
+`,
+        },
+      ],
+    }),
+  }
+);
+
+const wordsData = await wordsResponse.json();
+
+const wordsText =
+  wordsData.choices[0].message.content;
+  
+  setWordExplanation(wordsText);
+
+const newStory = {
+  title,
+  content: story,
+  words: wordsText ,
+};
+
+setSavedStories(prev => [
+  ...prev,
+  newStory,
+]);
+
 setIsGenerating(false);
   }}
+  
 >
  {isGenerating ? "⏳ Generating..." : "Generate Story"}
 </button>
@@ -766,6 +893,57 @@ console.log("openedStory", openedStory);
   }}
 >
   {word}
+  <button
+  onClick={() => {
+    const englishWord =
+      word
+        .split("\n")[0]
+        .replace("WORD:", "")
+        .trim();
+
+    speechSynthesis.speak(
+      new SpeechSynthesisUtterance(
+        englishWord
+      )
+    );
+  }}
+  style={{
+    marginTop: "10px",
+    marginRight: "10px",
+  }}
+>
+  🔊 Word
+</button>
+<button
+  onClick={() => {
+    const lines = word.split("\n");
+
+    const exampleLine =
+      lines.find(line =>
+        line.startsWith("EXAMPLE:")
+      );
+
+    if (!exampleLine) return;
+
+    const example =
+      exampleLine.replace(
+        "EXAMPLE:",
+        ""
+      ).trim();
+
+    speechSynthesis.speak(
+      new SpeechSynthesisUtterance(
+        example
+      )
+    );
+  }}
+  style={{
+    marginTop: "10px",
+    marginLeft: "10px",
+  }}
+>
+  🔊 Example
+</button>
 </div></div>
 ))}
   
@@ -1185,14 +1363,26 @@ position: "relative"
     borderRadius: "18px",
     border: "none",
     background: "linear-gradient(135deg,#f59e0b,#ef4444)",
-    color: "white",
+    color: "red",
     fontSize: "18px",
     fontWeight: "700",
     cursor: "pointer",
-    boxShadow: "0 8px 24px rgba(245,158,11,0.25)",
+    boxShadow: "0 8px 24px rgba(201, 162, 94, 0.56)",
   }}
 >
   ✨ Create New Story
+</button>
+<button
+  onClick={() => {
+    setJackProfile(`
+Pachi works at Kitahotaka Hut.
+Pachi loves hiking.
+Pachi loves skiing.
+Pachi often talks with foreign hikers.
+`);
+  }}
+>
+  💻 Create Jack Profile
 </button>
 
 <button
