@@ -88,14 +88,13 @@ useEffect(() => {
     jackProfile
   );
 }, [jackProfile]);
-  const [showWords, setShowWords] = useState(false);
+ 
  
   const [message, setMessage] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedStory, setGeneratedStory] = useState("");
   const [storyTitle, setStoryTitle] = useState("");
-  const [generatedTitle, setGeneratedTitle] =
-  useState("");
+
   const [editMode, setEditMode] = useState(false);
   const [openedStory, setOpenedStory] = useState<{
   title: string;
@@ -533,7 +532,7 @@ if (
 setSavedStories(prev => [
   ...prev,
   {
-    title: generatedTitle,
+    title: storyTitle,
     content: generatedStory,
     words: wordsData,
   },
