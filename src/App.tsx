@@ -1,4 +1,29 @@
 import { useState, useEffect } from "react";
+async function playAIVoice(text: string, apiKey: string) {
+  const response = await fetch(
+    "https://api.openai.com/v1/audio/speech",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini-tts",
+        voice: "alloy",
+        input: text,
+      }),
+    }
+  );
+
+  const blob = await response.blob();
+
+  const url = URL.createObjectURL(blob);
+
+  const audio = new Audio(url);
+
+  audio.play();
+}
 
 const phraseData = {
   "To be honest": {
@@ -702,25 +727,11 @@ if (openedStory) {
 
       <button
   onClick={() => {
-    const utterance =
-      new SpeechSynthesisUtterance(
-        openedStory.content
-      );
-
-    utterance.lang = "en-US";
-
-    speechSynthesis.speak(utterance);
-  }}
-  style={{
-    background: "#3b82f6",
-    color: "white",
-    border: "none",
-    padding: "12px 20px",
-    borderRadius: "12px",
-    fontSize: "16px",
-    cursor: "pointer",
-    marginBottom: "20px",
-  }}
+  playAIVoice(
+    openedStory.content,
+    apiKey
+  );
+}}
 >
   🔊 Play Audio
 </button>
